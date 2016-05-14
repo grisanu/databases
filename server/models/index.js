@@ -1,5 +1,36 @@
 var db = require('../db');
 
+
+/*
+
+var findUser = function (user, cb) {
+  
+}
+
+
+findUser(user, function(id) {
+  
+  if (id === null) {
+    
+    createUser(user, function(userId) {
+  
+
+
+
+
+    };
+  };
+
+
+
+
+
+
+});
+*/
+
+
+
 module.exports = {
   messages: {
     get: function (req, res) {
@@ -88,6 +119,25 @@ module.exports = {
 
   users: {
     // Ditto as above.
+    get: function () {},
+    post: function (data, res) {
+      
+      // console.log('model user post!');
+
+
+      var connection = db.connect();
+      connection.query('insert into user (username) values (?)', data.username, function(err, rows, fields) {
+        if (err) {
+          console.log(err);
+        }
+        res.end();
+      });
+      connection.end();
+
+
+    }
+  },
+  rooms: {
     get: function () {},
     post: function (data, res) {
       

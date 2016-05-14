@@ -10,6 +10,7 @@ module.exports = {
       console.log('controller get');
       // console.log(req.body);
       models.messages.get(null, res);
+
     //select * from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
 
     //select messages.text, messages.creationDate, room.roomname, user.userName from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
