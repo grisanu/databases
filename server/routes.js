@@ -4,7 +4,6 @@ var router = require('express').Router();
 //Connect controller methods to their corresponding routes
 
 router.all('*', function(req, res, next) {
-  console.log('all');
   res.header('access-control-allow-origin', '*');
   res.header('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('access-control-allow-headers', 'content-type, accept');
@@ -25,22 +24,13 @@ router.use('/', function(req, res) {
   if (req.method === 'OPTIONS') {
     //console.log('options');
 
-
-    var headers = defaultCorsHeaders;
+    var headers = {};
     headers['Content-Type'] = "application/json";
     res.writeHead(200, headers);
     res.end('');
 
-
   }
 });
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
-};
-
 
 
 

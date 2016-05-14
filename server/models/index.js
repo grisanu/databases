@@ -60,14 +60,13 @@ module.exports = {
   messages: {
     get: function (req, res) {
 
-      console.log('model get');
+      //console.log('model get');
 
       var connection = db.connect();
 
-      connection.query('select m.id as objectId, m.text, m.creationDate, u.userName as username, r.roomname from messages m left outer join room r on r.id = m.roomId inner join user u on u.id = m.userId', 
+      connection.query('select m.id as objectId, m.text, m.creationDate, u.userName as username, r.roomname from messages m left outer join room r on r.id = m.roomId left outer join user u on u.id = m.userId', 
         function (err, rows, fields) {
           //console.log('rows =>', rows);
-          // console.log('fields =>', fields);
           if (err) {
             console.log(err);
           }
@@ -81,6 +80,8 @@ module.exports = {
       // console.log('model post', data.message);
       var connection = db.connect();
       data.message = data.message || data.text || '';
+      //console.log('data.text:', data.text);
+      //console.log('received message: ', data.message);
       data.roomname = data.roomname || '';
       data.username = data.username || '';
 
