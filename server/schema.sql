@@ -2,12 +2,41 @@ CREATE DATABASE chat;
 
 USE chat;
 
-CREATE TABLE messages (
-  /* Describe your table here.*/
+DROP TABLE IF EXISTS `messages`;
+    
+CREATE TABLE `messages` (
+  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `text` VARCHAR(255) NULL DEFAULT NULL,
+  `creationDate` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `userId` INTEGER NULL DEFAULT NULL,
+  `roomId` INTEGER NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
 
-/* Create other tables and define schemas for them here! */
 
+
+DROP TABLE IF EXISTS `user`;
+    
+CREATE TABLE `user` (
+  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `username` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+
+DROP TABLE IF EXISTS `room`;
+    
+CREATE TABLE `room` (
+  `id` INTEGER NULL AUTO_INCREMENT DEFAULT NULL,
+  `roomname` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+
+
+ALTER TABLE `messages` ADD FOREIGN KEY (userId) REFERENCES `user` (`id`);
+ALTER TABLE `messages` ADD FOREIGN KEY (roomId) REFERENCES `room` (`id`);
 
 
 
@@ -15,3 +44,4 @@ CREATE TABLE messages (
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/
 
+#select * from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
