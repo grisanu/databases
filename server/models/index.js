@@ -1,34 +1,59 @@
 var db = require('../db');
 
 
-/*
+var findOrCreateUserId = function(userName, connection, cb) {
+  connection.query('select id from user where username = ?', [userName], function(err, rows, fields) {
+    if (err) {
+      console.log(err);
+    }
 
-var findUser = function (user, cb) {
-  
-}
+    if (rows.length === 0) {
+      //create a new one.
+      connection.query('insert into user (username) values (?)', [userName], function(err, rows, fields) {
+        if (err) {
+          console.log(err);
+        }
+        cb(rows.insertId);
+      });
 
+    } else {
+      cb(rows[0].id);
+    }
 
-findUser(user, function(id) {
-  
-  if (id === null) {
+  });
+};
+
+var findOrCreateRoomId = function(roomName, connection, cb) {
+  connection.query('select id from room where roomname = ?', [roomName], function(err, rows, fields) {
+    if (err) {
+      console.log(err);
+    }
+
+    if (rows.length === 0) {
+      //create a new one.
+      connection.query('insert into room (roomname) values (?)', [roomName], function(err, rows, fields) {
+        if (err) {
+          console.log(err);
+        }
+        cb(rows.insertId);
+      });
+
+    } else {
+      cb(rows[0].id);
+    }
     
-    createUser(user, function(userId) {
-  
+  });
+};
 
-
-
-
-    };
-  };
-
-
-
-
-
-
-});
-*/
-
+var createMessage = function(text, userId, roomId, connection, cb) {
+  connection.query('insert into messages (text, roomId, userId) values (?, ?, ?)', [text, roomId, userId], 
+    function (err, rows, field) {
+      if (err) {
+        console.log(err);
+      }
+      cb();
+    });
+};
 
 
 module.exports = {
@@ -39,14 +64,15 @@ module.exports = {
 
       var connection = db.connect();
 
-      connection.query('select m.id, m.text, m.creationDate, m.userId, r.roomname from messages m left outer join room r on r.id = m.roomId', 
+      connection.query('select m.id as objectId, m.text, m.creationDate, u.userName as username, r.roomname from messages m left outer join room r on r.id = m.roomId inner join user u on u.id = m.userId', 
         function (err, rows, fields) {
           //console.log('rows =>', rows);
           // console.log('fields =>', fields);
           if (err) {
             console.log(err);
           }
-          res.end(JSON.stringify(rows));
+          res.header("Content-Type", "application/json");
+          res.end(JSON.stringify({results: rows}));
         });
       connection.end();
 
@@ -54,105 +80,42 @@ module.exports = {
     post: function (data, res) {
       // console.log('model post', data.message);
       var connection = db.connect();
-      data.message = data.message || '';
-      
-      console.log('roomname =>', typeof data.roomname, data.roomname);
+      data.message = data.message || data.text || '';
+      data.roomname = data.roomname || '';
+      data.username = data.username || '';
 
-      connection.query('select * from room where roomname = ?', [data.roomname], function (err, rows, fields) {
-        if (err) {
-          console.log('Error from selecting roomname from room table', err);
-        }
-        // var roomId = '';
-        console.log('Rows tpye from selecting from room table: ', typeof rows, rows);
-        if (rows.length === 0) { // empty set returned from query
-          
-          connection.query('insert into room (roomname) values (?)', data.roomname, function (err, rows, fields) {
-            if (err) {
-              console.log(err);
-            }
-
-            var roomId = rows.insertId;
-
-            connection.query('insert into messages (text, roomId) values (?, ?)',
-            [data.message, roomId], 
-            function (err, rows, field) {
-              if (err) {
-                console.log(err);
-              }
-              res.end();
-            });
-
-
+      findOrCreateUserId(data.username, connection, function(userId) {
+        findOrCreateRoomId(data.roomname, connection, function(roomId) {
+          createMessage(data.message, userId, roomId, connection, function() {
+            res.end();
           });
-
-
-          // connection.end();
-        } else { // found the roomname
-          // console.log('ROWS =>', rows);
-          connection.query('insert into messages (text, roomId) values (?, ?)',
-            [data.message, rows[0].id], 
-            function (err, rows, field) {
-              if (err) {
-                console.log(err);
-              }
-              res.end();
-            });
-
-
-          // connection.end();
-        }
-
-
-
-      });
-
-      // connection.query('insert into messages (text) values (?)', data.message, function(err, rows, fields) {
-      //   if (err) {
-      //     console.log(err);
-      //   }
-      //   // console.log('rows:', rows);
-      //   // console.log('fields:', fields);
-      //   res.end();
-      // });
-    } // a function which can be used to insert a message into the database
+        });
+      }); 
+    }
   },
-
   users: {
     // Ditto as above.
     get: function () {},
     post: function (data, res) {
       
-      // console.log('model user post!');
-
-
       var connection = db.connect();
-      connection.query('insert into user (username) values (?)', data.username, function(err, rows, fields) {
-        if (err) {
-          console.log(err);
-        }
+
+      findOrCreateUserId(data.username, connection, function(userId) {
+        connection.end();
         res.end();
       });
-      connection.end();
-
-
     }
   },
   rooms: {
     get: function () {},
     post: function (data, res) {
       
-      // console.log('model user post!');
-
-
       var connection = db.connect();
-      connection.query('insert into user (username) values (?)', data.username, function(err, rows, fields) {
-        if (err) {
-          console.log(err);
-        }
+
+      findOrCreateRoomId(data.roomname, connection, function(userId) {
+        connection.end();
         res.end();
       });
-      connection.end();
-
 
     }
   }
