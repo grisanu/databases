@@ -7,7 +7,7 @@ var mysql = require('mysql');
 module.exports = {
   messages: { // a function which handles a get request for all messages
     get: function (req, res) {
-console.log('controller get');
+      console.log('controller get');
     //select * from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
 
     //select messages.text, messages.creationDate, room.roomname, user.userName from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
@@ -16,7 +16,12 @@ console.log('controller get');
 
     }, 
     post: function (req, res) { // a function which handles posting a message to the database
-console.log('controller post');
+      console.log('controller post');
+
+      models.messages.post(req.body);
+      res.end();
+      //
+
     /*
 
     newpost = {text:'text', roomname:'room', username:'bill'};
@@ -38,7 +43,6 @@ console.log('controller post');
     */
 
 
- 
 // connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
 //   if (err) throw err;
  
@@ -58,6 +62,7 @@ console.log('controller post');
     post: function (req, res) {
       console.log('controller user post', req.body, typeof req.body);
       models.users.post(req.body);
+      res.end();
     }
   }
 };
