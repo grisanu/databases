@@ -14,7 +14,7 @@ module.exports = {
         if (err) {
           console.log(err);
         }
-        res.end(rows);
+        res.end(JSON.stringify(rows));
       });
       connection.end();
 
