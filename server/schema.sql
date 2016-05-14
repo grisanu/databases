@@ -44,4 +44,4 @@ ALTER TABLE `messages` ADD FOREIGN KEY (roomId) REFERENCES `room` (`id`);
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/
 
-#select * from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
+

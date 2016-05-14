@@ -1,18 +1,22 @@
 var models = require('../models');
+var mysql = require('mysql');
+
+
+
 
 module.exports = {
-  messages: {
+  messages: { // a function which handles a get request for all messages
     get: function (req, res) {
-
+console.log('controller get');
     //select * from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
 
     //select messages.text, messages.creationDate, room.roomname, user.userName from messages inner join room on messages.roomId = room.id inner join user on messages.userId = user.id;
 
 
 
-    }, // a function which handles a get request for all messages
-    post: function (req, res) {} // a function which handles posting a message to the database
-
+    }, 
+    post: function (req, res) { // a function which handles posting a message to the database
+console.log('controller post');
     /*
 
     newpost = {text:'text', roomname:'room', username:'bill'};
@@ -34,13 +38,27 @@ module.exports = {
     */
 
 
+ 
+// connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
+//   if (err) throw err;
+ 
+//   console.log('The solution is: ', rows[0].solution);
+// });
+ 
+// connection.end();
+
+
+    }
 
   },
 
   users: {
     // Ditto as above
     get: function (req, res) {},
-    post: function (req, res) {}
+    post: function (req, res) {
+      console.log('controller user post', req.body, typeof req.body);
+      models.users.post(req.body);
+    }
   }
 };
 
